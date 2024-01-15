@@ -19,7 +19,7 @@ OptionParser.new do |opts|
 end.parse!
 
 puts "#{month}月 #{year}".center(20)
-puts " 日 月 火 水 木 金 土"
+puts "日 月 火 水 木 金 土"
 
 day_of_week = Date.new(year,month).wday
 
@@ -29,7 +29,7 @@ print "   " * day_of_week
 first_day = Date.new(year, month, 1)
 last_day = Date.new(year,month,-1)
 (first_day..last_day).each do |date|
-  print date.day.to_s.rjust(3)
+  print date.day.to_s.center(3)
   if date.saturday? || date == last_day
     puts
   end
