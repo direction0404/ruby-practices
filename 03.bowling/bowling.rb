@@ -12,48 +12,28 @@ scores.each do |s|
   end
 end
 
-frames = []
-shots.each_slice(2) do |s|
-  frames << s
+frames = shots.each_slice(2).to_a
+
+# 10フレーム目の結果により10フレーム目の要素を調整
+if frames[9].sum == 10
+  frames[9] += frames[10..].flatten
+  frames.pop(frames.size - 10)
 end
 
-if frames[9][0] == 10 && frames[10][0] == 10
-  frames[9] += frames[10] + frames[11]
-  frames.pop(2)
-elsif frames[9][0] == 10 && frames[10][0] != 10
-  frames[9] += frames[10]
-  frames.pop
-elsif frames[9].sum >= 10
-  frames[9] += frames[10]
-  frames.pop
-end
-
-point = 0
-frames.each_with_index do |frame, index|
-  point += if index < 8
-             if frame[0] == 10
-               if frames[index + 1][0] == 10
-                 frame.sum + frames[index + 1][0] + frames[index + 2][0]
-               else
-                 frame.sum + frames[index + 1][0] + frames[index + 1][1]
-               end
-             elsif frame.sum == 10
-               frame.sum + frames[index + 1][0]
+point = frames.each_with_index.sum do |frame, index|
+  score = frame.sum
+  next_frame_first = frames[index + 1][0] if index < 9
+  if index < 9 && frame[0] == 10
+    score += if index < 8 && next_frame_first == 10
+               next_frame_first + frames[index + 2][0]
+             elsif index == 8 && next_frame_first == 10
+               next_frame_first + frames[index + 1][1] + frames[index + 1][2]
              else
-               frame.sum
+               next_frame_first + frames[index + 1][1]
              end
-           elsif index == 8
-             if frame[0] == 10
-               if frames[index + 1][0] == 10
-                 frame.sum + frames[index + 1][0] + frames[index + 1][2]
-               else
-                 frame.sum + frames[index + 1][0] + frames[index + 1][1]
-               end
-             else
-               frame.sum
-             end
-           else
-             frame.sum
-           end
+  elsif index < 9 && score == 10
+    score += next_frame_first
+  end
+  score
 end
 puts point
